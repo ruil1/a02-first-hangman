@@ -59,7 +59,10 @@ defmodule Hangman.Game do
 
   defp update_state(game, guess) do
     new_state = %Hangman.Game.State{ game |
-      used: [ guess | game.used ]
+      used: game.used
+        |> MapSet.new()
+        |> MapSet.put(guess)
+        |> MapSet.to_list()
         |> Enum.sort()
     }
 
@@ -83,7 +86,7 @@ defmodule Hangman.Game do
         |> MapSet.new()
         |> MapSet.put(guess)
         |> MapSet.to_list()
-        |> Enum.sort(),
+        |> Enum.sort()
     }
     updated.used
   end
