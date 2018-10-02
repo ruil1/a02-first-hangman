@@ -48,23 +48,36 @@ defmodule Hangman.Game do
   defp check_letter(_, false),     do: "_"
 
   defp handle_guess(game, guess) do
-    new_state = update_state(game, guess)
-    %Hangman.Game.State{ game |
-      game_state: new_state,
-      turns_left: update_turn(game, new_state),
-      used: update_used(game, guess, new_state),
-      last_guess: guess
-    }
+    update_state(game, guess)
+    |> return_state(game, guess)
   end
 
   defp update_state(game, guess) do
-    check_status(
+    check_state(
       game.letters,
       tally(update_used(game, guess)).letters,
       game.turns_left,
       check_used(game, guess),
       check_correct(game, guess)
     )
+  end
+
+  defp check_used(game, guess),    do: Enum.member?(game.used, guess)
+  defp check_correct(game, guess), do: Enum.member?(game.letters, guess)
+
+  defp check_state(letters, letters, _, _, _), do: :won
+  defp check_state(_, _, 1, _, _),             do: :lost
+  defp check_state(_, _, _, true, _),          do: :already_used
+  defp check_state( _, _, _, _, true),         do: :good_guess
+  defp check_state(_, _, _, _, _),             do: :bad_guess
+
+  defp return_state(state, game, guess) do
+    %Hangman.Game.State{ game |
+      game_state: state,
+      turns_left: update_turn(game, state),
+      used: update_used(game, guess, state),
+      last_guess: guess
+    }
   end
 
   defp update_turn(game, :lost),      do: game.turns_left - 1
@@ -82,14 +95,5 @@ defmodule Hangman.Game do
         |> Enum.sort()
     }
   end
-
-  defp check_used(game, guess),    do: Enum.member?(game.used, guess)
-  defp check_correct(game, guess), do: Enum.member?(game.letters, guess)
-
-  defp check_status(letters, letters, _, _, _), do: :won
-  defp check_status(_, _, 1, _, _),             do: :lost
-  defp check_status(_, _, _, true, _),          do: :already_used
-  defp check_status( _, _, _, _, true),         do: :good_guess
-  defp check_status(_, _, _, _, _),             do: :bad_guess
 
 end
