@@ -48,7 +48,8 @@ defmodule Hangman.Game do
   defp check_letter(_, false),     do: "_"
 
   defp handle_guess(game, guess) do
-    update_state(game, guess)
+    game
+    |> update_state(guess)
     |> return_state(game, guess)
   end
 
@@ -68,7 +69,7 @@ defmodule Hangman.Game do
   defp check_state(letters, letters, _, _, _), do: :won
   defp check_state(_, _, 1, _, _),             do: :lost
   defp check_state(_, _, _, true, _),          do: :already_used
-  defp check_state( _, _, _, _, true),         do: :good_guess
+  defp check_state(_, _, _, _, true),          do: :good_guess
   defp check_state(_, _, _, _, _),             do: :bad_guess
 
   defp return_state(state, game, guess) do
