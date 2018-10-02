@@ -45,7 +45,7 @@ defmodule Hangman.Game do
   end
 
   defp check_letter(letter, true), do: letter
-  defp check_letter(_, false), do: "_"
+  defp check_letter(_, false),     do: "_"
 
   defp handle_guess(game, guess) do
     new_state = update_state(game, guess)
@@ -64,8 +64,8 @@ defmodule Hangman.Game do
       game.letters,
       tally(new_state).letters,
       game.turns_left,
-      check_used(game.used, guess),
-      check_correct(game.letters, guess)
+      check_used(game, guess),
+      check_correct(game, guess)
     )
   end
 
@@ -74,7 +74,7 @@ defmodule Hangman.Game do
   defp update_turn(game, _),          do: game.turns_left
 
   defp update_used(game, _, :already_used), do: game.used
-  defp update_used(game, guess, _), do: update_used(game, guess).used
+  defp update_used(game, guess, _),         do: update_used(game, guess).used
   defp update_used(game, guess) do
     %Hangman.Game.State{ game |
       used: game.used
@@ -85,8 +85,8 @@ defmodule Hangman.Game do
     }
   end
 
-  defp check_used(used, guess),       do: Enum.member?(used, guess)
-  defp check_correct(letters, guess), do: Enum.member?(letters, guess)
+  defp check_used(game, guess),       do: Enum.member?(game.used, guess)
+  defp check_correct(game, guess), do: Enum.member?(game.letters, guess)
 
   defp check_status(letters, letters, _, _, _), do: :won
   defp check_status(_, _, 1, _, _),             do: :lost
