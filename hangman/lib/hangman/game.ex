@@ -58,11 +58,9 @@ defmodule Hangman.Game do
   end
 
   defp update_state(game, guess) do
-    new_state = update_used(game, guess)
-
     check_status(
       game.letters,
-      tally(new_state).letters,
+      tally(update_used(game, guess)).letters,
       game.turns_left,
       check_used(game, guess),
       check_correct(game, guess)
