@@ -85,7 +85,7 @@ defmodule Hangman.Game do
     }
   end
 
-  defp check_used(game, guess),       do: Enum.member?(game.used, guess)
+  defp check_used(game, guess),    do: Enum.member?(game.used, guess)
   defp check_correct(game, guess), do: Enum.member?(game.letters, guess)
 
   defp check_status(letters, letters, _, _, _), do: :won
