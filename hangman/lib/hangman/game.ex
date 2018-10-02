@@ -58,19 +58,13 @@ defmodule Hangman.Game do
   end
 
   defp update_state(game, guess) do
-    new_state = %Hangman.Game.State{ game |
-      used: game.used
-        |> MapSet.new()
-        |> MapSet.put(guess)
-        |> MapSet.to_list()
-        |> Enum.sort()
-    }
+    new_state = update_used(game, guess)
 
     check_status(
-      check_used(game.used, guess),
       game.letters,
       tally(new_state).letters,
       game.turns_left,
+      check_used(game.used, guess),
       check_correct(game.letters, guess)
     )
   end
@@ -80,24 +74,24 @@ defmodule Hangman.Game do
   defp update_turn(game, _),          do: game.turns_left
 
   defp update_used(game, _, :already_used), do: game.used
-  defp update_used(game, guess, _) do
-    updated = %Hangman.Game.State{ game |
+  defp update_used(game, guess, _), do: update_used(game, guess).used
+  defp update_used(game, guess) do
+    %Hangman.Game.State{ game |
       used: game.used
         |> MapSet.new()
         |> MapSet.put(guess)
         |> MapSet.to_list()
         |> Enum.sort()
     }
-    updated.used
   end
 
   defp check_used(used, guess),       do: Enum.member?(used, guess)
   defp check_correct(letters, guess), do: Enum.member?(letters, guess)
 
-  defp check_status(true, _, _, _, _),    do: :already_used
-  defp check_status(_, word, word, _, _), do: :won
-  defp check_status(_, _, _, 1, _),       do: :lost
-  defp check_status(_, _, _, _, true),    do: :good_guess
-  defp check_status(_, _, _, _, _),       do: :bad_guess
+  defp check_status(letters, letters, _, _, _), do: :won
+  defp check_status(_, _, 1, _, _),             do: :lost
+  defp check_status(_, _, _, true, _),          do: :already_used
+  defp check_status( _, _, _, _, true),         do: :good_guess
+  defp check_status(_, _, _, _, _),             do: :bad_guess
 
 end
